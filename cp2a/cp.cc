@@ -63,7 +63,9 @@ void correlate(int ny, int nx, const float *data_, float *result) {
 	  double x = data[i*nab + offset];
 	  double y = data[j*nab + offset];
 	  double p = x * y;
-	  vv[kb] += p;
+	  vv[kb] += p;  // compile-time optimization is happening here
+	  // vfmadd231sd is used, meaning multiplication and add is done in one instruction
+	  // however, there are only 3 registers involved, why not 4?
 	}
 	asm("# foo end");            	
       }
