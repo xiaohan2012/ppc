@@ -11,8 +11,7 @@ This is the function you need to implement. Quick reference:
 - only parts with 0 <= j <= i < ny need to be filled
 */
 void correlate(int ny, int nx, const float *data_, float *result) {
-
-  int nb = 4; // chunk size
+  constexpr int nb = 4; // chunk size
   int na = (nx + nb - 1) / nb; // number of chunks
   int nab = na * nb; // number of colums
   // cout << "na: " << na << " nab: " << nab << "\n";
@@ -51,19 +50,29 @@ void correlate(int ny, int nx, const float *data_, float *result) {
     
   for(int i=0; i<ny; i++){
     for(int j=0; j<=i; j++){
+
       double vv[nb];      
       for(int kb=0; kb<nb; kb++)
 	vv[kb] = 0;
 
+
       for(int ka=0; ka<na; ka++){
+	asm("# foo start");      	
 	for(int kb=0; kb<nb; kb++){
-	  vv[kb] += (data[i*nab + ka*nb + kb] * data[j*nab + ka*nb + kb]);
+	  int offset = ka*nb + kb;
+	  double x = data[i*nab + offset];
+	  double y = data[j*nab + offset];
+	  double p = x * y;
+	  vv[kb] += p;
 	}
+	asm("# foo end");            	
       }
+
       double res = 0;
       for(int kb=0; kb<nb; kb++)
 	res += vv[kb];
       result[i + j*ny] = res;
+
       // double res = 0;
       // for(int x=0; x<nx; x++){
       // 	res += data[i*nx + x] * data[j*nx + x];

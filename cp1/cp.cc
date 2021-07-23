@@ -34,11 +34,14 @@ void correlate(int ny, int nx, const float *data_, float *result) {
 
   for(int i=0; i<ny; i++){
     for(int j=0; j<=i; j++){
+      asm("#foo start");
       double res = 0;;
       for(int x=0; x<nx; x++){
-	res += data[i*nx + x] * data[j*nx + x];
+	double p = data[i*nx + x] * data[j*nx + x];
+	res += p;
       }
       result[i + j*ny] = res;
+      asm("#foo end");
     }
   }
 }
