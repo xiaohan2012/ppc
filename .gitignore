@@ -1,7 +1,10 @@
 *~
 *zip
-*/benchmarks/
-*/grading
-*/tests/
-*/.ppc
+# */benchmarks/
+# */grading
+# */tests/
+# */.ppc
 */cp
+*.s
+*/__pycache__/*
+*pyc
