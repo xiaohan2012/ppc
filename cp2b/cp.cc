@@ -14,7 +14,7 @@ This is the function you need to implement. Quick reference:
 void correlate(int ny, int nx, const float *data_, float *result) {
   double* data = (double*) malloc(nx*ny * sizeof(double));
 
-  #pragma omp parallel for  
+  #pragma omp parallel for schedule(static,1)  
   for(int y=0; y<ny; y++){
     double sum = 0, sum_sq = 0, mean, sum_sq_sqrt;
     for(int x=0; x<nx; x++){
@@ -34,7 +34,7 @@ void correlate(int ny, int nx, const float *data_, float *result) {
     }
   }
 
-  #pragma omp parallel for
+  #pragma omp parallel for schedule(static,1)
   for(int i=0; i<ny; i++){
     for(int j=0; j<=i; j++){
       asm("#foo start");
