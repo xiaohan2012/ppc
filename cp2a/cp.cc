@@ -11,6 +11,7 @@ This is the function you need to implement. Quick reference:
 - only parts with 0 <= j <= i < ny need to be filled
 */
 void correlate(int ny, int nx, const float *data_, float *result) {
+  // constexpr is important!
   constexpr int nb = 4; // chunk size
   int na = (nx + nb - 1) / nb; // number of chunks
   int nab = na * nb; // number of colums
@@ -48,14 +49,18 @@ void correlate(int ny, int nx, const float *data_, float *result) {
   // }
 
     
-  for(int i=0; i<ny; i++){
-    for(int j=0; j<=i; j++){
-
+  // j is row, i is column
+  // we scan row by row  
+  for(int j=0; j<ny; j++){
+    for(int i=j; i<ny; i++){
+  // for(int i=0; i<ny; i++){        
+  //   for(int j=0; j<=i; j++){
       double vv[nb];      
       for(int kb=0; kb<nb; kb++)
 	vv[kb] = 0;
 
 
+      // can we prefetch data at data[i*nab] and data[j*nab]?
       for(int ka=0; ka<na; ka++){
 	asm("# foo start");      	
 	for(int kb=0; kb<nb; kb++){
@@ -73,7 +78,8 @@ void correlate(int ny, int nx, const float *data_, float *result) {
       double res = 0;
       for(int kb=0; kb<nb; kb++)
 	res += vv[kb];
-      result[i + j*ny] = res;
+      result[j*ny + i] = res;
+      // result[i*ny + j] = res;
 
       // double res = 0;
       // for(int x=0; x<nx; x++){
